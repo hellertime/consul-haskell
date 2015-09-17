@@ -6,7 +6,10 @@
 module Network.Consul (
     createManagedSession
   , deleteKey
+  , deregisterHealthCheck
+  , deregisterService
   , destroyManagedSession
+  , failHealthCheck
   , getKey
   , getKeys
   , getSelf
@@ -22,8 +25,10 @@ module Network.Consul (
   , putKey
   , putKeyAcquireLock
   , putKeyReleaseLock
+  , registerHealthCheck
   , registerService
   , runService
+  , warnHealthCheck
   , withManagedSession
   , withSequencer
   , withSession
@@ -93,11 +98,29 @@ getService :: MonadIO m => ConsulClient -> Text -> Maybe Text -> Maybe Datacente
 getService _client@ConsulClient{..} = I.getService ccManager ccHostname ccPort
 
 {- Agent -}
-getSelf :: MonadIO m => ConsulClient -> m (Maybe Self)
-getSelf _client@ConsulClient{..} = I.getSelf ccManager ccHostname ccPort
+registerHealthCheck :: MonadIO m => ConsulClient -> RegisterHealthCheck -> m ()
+registerHealthCheck _client@ConsulClient{..} = I.registerHealthCheck ccManager ccHostname ccPort
+
+deregisterHealthCheck :: MonadIO m => ConsulClient -> Text -> m ()
+deregisterHealthCheck _client@ConsulClient{..} = I.deregisterHealthCheck ccManager ccHostname ccPort
+
+passHealthCheck :: MonadIO m => ConsulClient -> Text -> Maybe Datacenter -> m ()
+passHealthCheck _client@ConsulClient{..} = I.passHealthCheck ccManager ccHostname ccPort
+
+warnHealthCheck :: MonadIO m => ConsulClient -> Text -> m ()
+warnHealthCheck _client@ConsulClient{..} = I.warnHealthCheck ccManager ccHostname ccPort
+
+failHealthCheck :: MonadIO m => ConsulClient -> Text -> m ()
+failHealthCheck _client@ConsulClient{..} = I.failHealthCheck ccManager ccHostname ccPort
 
 registerService :: MonadIO m => ConsulClient -> RegisterService -> Maybe Datacenter -> m Bool
 registerService _client@ConsulClient{..} = I.registerService ccManager ccHostname ccPort
+
+deregisterService :: MonadIO m => ConsulClient -> Text -> m ()
+deregisterService _client@ConsulClient{..} = I.deregisterService ccManager ccHostname ccPort
+
+getSelf :: MonadIO m => ConsulClient -> m (Maybe Self)
+getSelf _client@ConsulClient{..} = I.getSelf ccManager ccHostname ccPort
 
 runService :: (MonadBaseControl IO m, MonadIO m) => ConsulClient -> RegisterService -> m () -> Maybe Datacenter -> m ()
 runService client request action dc = do
