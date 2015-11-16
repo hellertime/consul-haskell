@@ -45,6 +45,8 @@ library
     network,
     text,
     transformers,
+    unordered-containers,
+    vector,
     stm
   ghc-options:
     -Wall
