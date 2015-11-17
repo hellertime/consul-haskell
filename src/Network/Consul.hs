@@ -6,6 +6,7 @@
 module Network.Consul (
     createManagedSession
   , deleteKey
+  , deregisterService
   , destroyManagedSession
   , getKey
   , getKeys
@@ -105,6 +106,9 @@ getService _client@ConsulClient{..} = I.getService ccManager (I.hostWithScheme _
 {- Agent -}
 getSelf :: MonadIO m => ConsulClient -> m (Maybe Self)
 getSelf _client@ConsulClient{..} = I.getSelf ccManager (I.hostWithScheme _client) ccPort
+
+deregisterService :: MonadIO m => ConsulClient -> Text -> m ()
+deregisterService _client@ConsulClient{..} = I.deregisterService ccManager (I.hostWithScheme _client) ccPort 
 
 registerService :: MonadIO m => ConsulClient -> RegisterService -> Maybe Datacenter -> m Bool
 registerService _client@ConsulClient{..} = I.registerService ccManager (I.hostWithScheme _client) ccPort
